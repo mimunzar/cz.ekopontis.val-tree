@@ -9,6 +9,7 @@ import openpyxl as xl
 import requests
 
 import src.val_tree.util as util
+import src.val_tree.tree as tree
 
 
 def send_request():
@@ -26,7 +27,7 @@ def send_request():
         "growth_conditions":"unaffected",
         "microhabitats":[],
         "extensive_microhabitats":[],
-        "taxon_offset":7,
+        "taxon_offset":8,
         "_taxon_cz":"borovice černá",
         "_taxon_lat":"Pinus nigra",
         "memorial_tree":False,
@@ -39,18 +40,11 @@ def send_request():
             headers={'Content-Type': 'application/json'},
         )
 
-    print(r.json())
-
-
-def cell_value(c):
-    return c.value
-
-INPUT_TRUTHY_VALS = ['a', 'ano', 'y', 'yes']
-INPUT_TREE_ROW    = cl.OrderedDict({
+INPUT_TREE_ROW = cl.OrderedDict({
     'ID'                                : lambda x: int(x),
     'S/P'                               : lambda x: x,
     'Český název | Latinský název'      : lambda x: x,
-    'průměr kmene [cm]'                 : lambda x: tuple(map(float, re.split(';|,', str(x)))),
+    'průměr kmene [cm]'                 : lambda x: tuple(map(float, re.split(r';|,', str(x)))),
     'obvod kmene [cm]'                  : lambda x: x,
     'výška stromu [m]'                  : lambda x: float(x),
     'výška nasazení koruny [m]'         : lambda x: float(x),
@@ -61,27 +55,32 @@ INPUT_TREE_ROW    = cl.OrderedDict({
     'růstové podmínky'                  : lambda x: int(x),
     'biologický význam'                 : lambda x: int(x),
     'odstraněná část koruny [%]'        : lambda x: int(x),
-    'rozštípnuté dřevo a trhliny (A/N)' : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'dutiny (A/N)'                      : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'hniloba (A/N)'                     : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'suché větve (A/N)'                 : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'poškození borky (A/N)'             : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'výtok mízy (A/N)'                  : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'zlomené větve (A/N)'               : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'dutinky (A/N)'                     : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'plodnice hub (A/N)'                : lambda x: x.lower() in INPUT_TRUTHY_VALS,
-    'Památný strom (A/N)'               : lambda x: x.lower() in INPUT_TRUTHY_VALS,
+    'rozštípnuté dřevo a trhliny (A/R)' : lambda x: x,
+    'dutiny (A/R)'                      : lambda x: x,
+    'hniloba (A/R)'                     : lambda x: x,
+    'suché větve (A/R)'                 : lambda x: x,
+    'poškození borky (A)'               : lambda x: bool(x),
+    'výtok mízy (A)'                    : lambda x: bool(x),
+    'zlomené větve (A)'                 : lambda x: bool(x),
+    'dutinky (A)'                       : lambda x: bool(x),
+    'plodnice hub (A)'                  : lambda x: bool(x),
+    'Památný strom (A)'                 : lambda x: bool(x),
     'Poznámky'                          : lambda x: x,
 })
+
 
 def parse_row(col_it):
     parse_existy = lambda v, k, f: (k, v if None == v else f(v))
     parse        = lambda v, i: parse_existy(v, *i)
-    return it.starmap(parse, zip(map(lambda c: c.value, col_it), INPUT_TREE_ROW.items()))
+    return dict(it.starmap(parse, zip(map(lambda c: c.value, col_it), INPUT_TREE_ROW.items())))
 
 
-if '__main__' == __name__:
+def from_workbook():
     wb  = xl.load_workbook(filename='.git/input.xlsm', read_only=True, data_only=True)
     ws  = wb.active
-    r_i = map(parse_row, util.drop(1, ws.iter_rows()))
+    return map(parse_row, util.drop(1, ws.iter_rows()))
+
+if '__main__' == __name__:
+    # result = from_workbook()
+    result = map(tree.make, from_workbook())
 
