@@ -57,9 +57,27 @@ def test_complement():
 
 def test_compose():
     neg = lambda x: not x
+    inc = lambda x: x + 1
     assert util.compose(lambda: True)()           == True
     assert util.compose(neg, lambda: True)()      == False
     assert util.compose(neg, neg, lambda: True)() == True
+    assert util.compose(inc, inc, inc, inc)(0)    == 4
+
+
+def test_any_fn():
+    is_zero = lambda x: 0 == x
+    is_one  = lambda x: 1 == x
+    assert util.any_fn(lambda: False)()               == False
+    assert util.any_fn(lambda: False, lambda: True)() == True
+    assert util.any_fn(is_zero, is_one)(1)            == True
+
+
+def test_all_fn():
+    is_zero = lambda x: 0 == x
+    is_one  = lambda x: 1 == x
+    assert util.all_fn(lambda: True)()                == True
+    assert util.all_fn(lambda: False, lambda: True)() == False
+    assert util.all_fn(is_zero, is_one)(1)            == False
 
 
 def test_partition_by():
@@ -68,4 +86,20 @@ def test_partition_by():
     assert list(map(list, util.partition_by(is_odd, [1])))       == [[1], []]
     assert list(map(list, util.partition_by(is_odd, [1, 2])))    == [[1], [2]]
     assert list(map(list, util.partition_by(is_odd, [1, 2, 3]))) == [[1, 3], [2]]
+
+
+def test_make_validator():
+    assert util.make_validator('Fail', lambda: False)()    == (False, 'Fail')
+    assert util.make_validator('Fail', lambda: True)()     == (True,  'Fail')
+    assert util.make_validator('Fail', lambda x: x % 2)(1) == (True,  'Fail')
+
+
+def test_make_checker():
+    checker = util.make_checker({
+        'foo': util.make_validator('Failed foo', lambda x: x > 0),
+        'bar': util.make_validator('Failed bar', lambda x: x > 0),
+    })
+    assert checker({'foo': 0, 'bar': 0, 'baz': 0}) == ('Failed foo', 'Failed bar',)
+    assert checker({'foo': 0, 'bar': 1, 'baz': 0}) == ('Failed foo',)
+    assert checker({'foo': 1, 'bar': 1, 'baz': 0}) == tuple()
 
