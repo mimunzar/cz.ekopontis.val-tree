@@ -15,17 +15,17 @@ def test_is_ext_microhabitat():
     assert all(map(util.complement(tree.is_ext_microhabitat), ['a', 'A', 'y', 'Y', '1', True]))
 
 
-def test_partition_microhabitats():
+def test_iter_microhabitats():
     idata = {'foo': None}
-    assert list(map(list, tree.partition_microhabitats(idata, idata.keys()))) == [
+    assert list(map(list, tree.iter_microhabitats(idata, idata.keys()))) == [
             [], []]
     idata = {'foo': None, 'bar': 'A'}
-    assert list(map(list, tree.partition_microhabitats(idata, idata.keys()))) == [
+    assert list(map(list, tree.iter_microhabitats(idata, idata.keys()))) == [
             [('bar', 'A'),], []]
     idata = {'foo': None, 'bar': 'A', 'baz': 'A'}
-    assert list(map(list, tree.partition_microhabitats(idata, idata.keys()))) == [
+    assert list(map(list, tree.iter_microhabitats(idata, idata.keys()))) == [
             [('bar', 'A'), ('baz', 'A'),], []]
     idata = {'foo': None, 'bar': 'A', 'baz': 'A', 'bax': 'R'}
-    assert list(map(list, tree.partition_microhabitats(idata, idata.keys()))) == [
+    assert list(map(list, tree.iter_microhabitats(idata, idata.keys()))) == [
             [('bar', 'A'), ('baz', 'A'),], [('bax', 'R')]]
 

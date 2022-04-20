@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-import functools as ft
-import itertools as it
-
 import src.val_tree.util as util
 
 
@@ -634,19 +631,20 @@ def classify_microhabitats(x):
     return None
 
 
-def partition_microhabitats(idata, m_it):
+def iter_microhabitats(idata, m_it):
     m_it  = tuple(m_it)
     kc_it = zip(m_it, map(classify_microhabitats, util.pluck(m_it, idata) or []))
     return util.partition_by(util.compose(is_microhabitat, util.second), filter(util.second, kc_it))
 
 
-def iter_names(s):
+def iter_tree_names(idata):
+    s = idata['Český název | Latinský název']
     return map(lambda s: s.strip().lower(), s.split(r'|'))
 
 
 def make(idata):
-    cz, lat = iter_names(idata['Český název | Latinský název'])
-    mh, emh = partition_microhabitats(idata, HABITAT_KEYS)
+    cz, lat = iter_tree_names(idata)
+    mh, emh = iter_microhabitats(idata, HABITAT_KEYS)
     return {
         'id'                      : idata['ID'],
         'tree_id'                 : TREE_ID[lat],
