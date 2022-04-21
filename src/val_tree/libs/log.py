@@ -1,10 +1,17 @@
 #!/usr/bin/env python3
 
 import functools as ft
+import datetime  as dt
 from time import time
 
 
 LINE_WIDTH = 80
+CURR_DATE  = ft.partial(dt.datetime.now, dt.timezone.utc)
+
+
+def fmt_msg(s, f_date=CURR_DATE):
+    return f'[{f_date().strftime("%Y%m%dT%H%M%S")} UTC] {s}'
+
 
 def fmt_fraction(n, d):
     d_len = len(str(d))
@@ -19,7 +26,7 @@ def fmt_bar(b_width, total, curr):
 
 def make_prog_bar(b_width, total, l_width=LINE_WIDTH):
     bar = ft.partial(fmt_bar, b_width, total)
-    return lambda curr, speed: f'{bar(curr)} ({speed:.02f} rec/s)'.center(l_width)
+    return lambda curr: f'{bar(curr)}'.center(l_width)
 
 
 def make_rec_sec(f_time=time):
