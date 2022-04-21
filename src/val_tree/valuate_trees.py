@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
 
-import collections as cl
-import itertools   as it
-import functools   as ft
-import json
-import re
-
 import openpyxl as xl
 import requests
 
 import src.val_tree.irecord as irecord
 import src.val_tree.util as util
-import src.val_tree.tree as tree
 
 
 def send_request():

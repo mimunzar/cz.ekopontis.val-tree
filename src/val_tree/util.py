@@ -5,10 +5,6 @@ import itertools as it
 import operator  as op
 
 
-def take(n, iterable):
-    return it.islice(iterable, n)
-
-
 def drop(n, iterable):
     return it.islice(iterable, n, None)
 
@@ -47,14 +43,6 @@ def _any_fn2(f, g):
 
 def any_fn(*f):
     return ft.reduce(_any_fn2, f)
-
-
-def _all_fn2(f, g):
-    return lambda *args: f(*args) and g(*args)
-
-
-def all_fn(*f):
-    return ft.reduce(_all_fn2, f)
 
 
 def partition_by(fp, iterable):

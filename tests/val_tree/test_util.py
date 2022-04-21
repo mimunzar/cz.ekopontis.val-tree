@@ -4,13 +4,6 @@ import pytest
 import src.val_tree.util as util
 
 
-def test_take():
-    assert list(util.take(None, [1, 2, 3])) == [1, 2, 3]
-    assert list(util.take(0,    [1, 2, 3])) == []
-    assert list(util.take(2,    [1, 2, 3])) == [1, 2]
-    assert list(util.take(42,   [1, 2, 3])) == [1, 2, 3]
-
-
 def test_drop():
     assert list(util.drop(None, [1, 2, 3])) == [1, 2, 3]
     assert list(util.drop(1,    [1, 2, 3])) == [2, 3]
@@ -70,14 +63,6 @@ def test_any_fn():
     assert util.any_fn(lambda: False)()               == False
     assert util.any_fn(lambda: False, lambda: True)() == True
     assert util.any_fn(is_zero, is_one)(1)            == True
-
-
-def test_all_fn():
-    is_zero = lambda x: 0 == x
-    is_one  = lambda x: 1 == x
-    assert util.all_fn(lambda: True)()                == True
-    assert util.all_fn(lambda: False, lambda: True)() == False
-    assert util.all_fn(is_zero, is_one)(1)            == False
 
 
 def test_partition_by():
