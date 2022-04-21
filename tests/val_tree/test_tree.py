@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import src.val_tree.tree as tree
-import src.val_tree.util as util
+import src.val_tree.libs.util as util
 
 
 

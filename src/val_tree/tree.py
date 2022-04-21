@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import src.val_tree.util as util
+import src.val_tree.libs.util as util
 
 
 TREE_ID = {

@@ -5,6 +5,10 @@ import itertools as it
 import operator  as op
 
 
+def take(n, iterable):
+    return it.islice(iterable, n)
+
+
 def drop(n, iterable):
     return it.islice(iterable, n, None)
 

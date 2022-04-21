@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 
 import pytest
-import src.val_tree.util as util
+import src.val_tree.libs.util as util
+
+
+def test_take():
+    assert list(util.take(None, [1, 2, 3])) == [1, 2, 3]
+    assert list(util.take(0,    [1, 2, 3])) == []
+    assert list(util.take(2,    [1, 2, 3])) == [1, 2]
+    assert list(util.take(42,   [1, 2, 3])) == [1, 2, 3]
 
 
 def test_drop():

@@ -3,7 +3,7 @@
 import collections as cl
 import re
 
-import src.val_tree.util as util
+import src.val_tree.libs.util as util
 
 
 def OPTIONAL():
