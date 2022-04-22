@@ -30,7 +30,6 @@ def test_make_prog_bar():
     assert b(1, 0.5) == '[#] 1/1 (0.50 rec/s)'
 
 
-
 def test_make_records_sec():
     rec_sec = log.make_rec_sec(lambda: 0)
     assert rec_sec(1, lambda: 2) == 0.5   # 1 sec diff

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import functools as ft
 import sys
 import openpyxl as xl
 import requests
@@ -37,17 +38,20 @@ def send_request():
             headers={'Content-Type': 'application/json'},
         )
 
-def make_parser(row_it):
-    row_it = tuple(row_it)
-    bar    = log.make_prog_bar(40, len(row_it))
-    i      = 0
-    print(f'{bar(i)}', end='\r')
-    def parser(c_it):
+def make_parser(n_rows):
+    speed = log.make_avg_rec_sec()
+    bar   = log.make_prog_bar(40, n_rows)
+    empty = lambda c_it: all(map(lambda c: None == c, c_it))
+    i     = 0
+    print(f'{bar(i, 0)}', end='\r')
+    def parser(acc, c_it):
         nonlocal i
-        r = irecord.parse(c_it)
+        c_it = tuple(map(lambda c: c.value, c_it))
+        if (not empty(c_it)):
+            acc.append(irecord.parse(c_it))
         i = i + 1
-        print(f'\033[K{bar(i)}', end='\n' if len(row_it) == i else '\r')
-        return r
+        print(f'\033[K{bar(i, speed(1))}', end='\n' if n_rows == i else '\r')
+        return acc
     return parser
 
 
@@ -56,11 +60,10 @@ if '__main__' == __name__:
         print(log.fmt_err('Missing input file'), file=sys.stderr)
         sys.exit(1)
 
-    wb = xl.load_workbook(filename=util.second(sys.argv), read_only=True, data_only=True)
-    non_empty = lambda c_it: any(map(lambda c: c, c_it))
-    row_vals  = lambda c_it: tuple(map(lambda c: c.value, c_it))
-    row_it    = tuple(filter(non_empty, map(row_vals, util.drop(1, wb.active.iter_rows()))))
+    wb = xl.load_workbook(filename=util.second(sys.argv), data_only=True)
+    ws = wb.active
 
     print(log.fmt_msg('Parsing Sheet:\n'))
-    result    = tuple(filter(util.second, map(make_parser(row_it), row_it)))
+    result = ft.reduce(make_parser(ws.max_row - 1), util.drop(1, ws.iter_rows()), [])
+    sys.exit(0)
 

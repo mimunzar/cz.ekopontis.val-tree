@@ -64,3 +64,13 @@ def make_checker(Validator):
         return tuple(map(second, filter(complement(first), val_it)))
     return checker
 
+
+def make_ravg():
+    i, avg = (0, 0)
+    def ravg(n):
+        nonlocal i, avg
+        i   = i + 1
+        avg = (avg*(i - 1) + n)/i
+        return avg
+    return ravg
+
