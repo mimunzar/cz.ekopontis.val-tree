@@ -14,7 +14,7 @@ def MATCHES(r):
     return lambda x: r.fullmatch(str(x).strip())
 
 
-ROW_VALIDATOR = cl.OrderedDict({
+VALIDATOR = cl.OrderedDict({
     'ID'                                : util.make_validator(
         f'"ID" must be positive int',
         MATCHES(re.compile(r'\d+'))),
@@ -111,9 +111,9 @@ ROW_VALIDATOR = cl.OrderedDict({
         f'"Památný strom (A)" must be one of (A)',
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'A', re.IGNORECASE)))),
 })
-ROW_CHECKER = util.make_checker(ROW_VALIDATOR)
+CHECKER = util.make_checker(VALIDATOR)
 
 def parse(col_it):
-    d = dict(zip(ROW_VALIDATOR.keys(), col_it))
-    return (d, ROW_CHECKER(d))
+    d = dict(zip(VALIDATOR.keys(), col_it))
+    return (d, CHECKER(d))
 

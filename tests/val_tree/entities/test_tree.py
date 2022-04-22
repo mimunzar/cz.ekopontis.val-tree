@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import src.val_tree.tree as tree
+import src.val_tree.entities.tree as tree
 import src.val_tree.libs.util as util
-
 
 
 def test_is_microhabitat():

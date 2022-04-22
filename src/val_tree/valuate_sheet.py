@@ -5,7 +5,7 @@ import sys
 import openpyxl as xl
 import requests
 
-import src.val_tree.irecord as irecord
+import src.val_tree.entities.measurement as measurement
 import src.val_tree.libs.util as util
 import src.val_tree.libs.log as log
 
@@ -48,7 +48,7 @@ def make_parser(n_rows):
         nonlocal i
         c_it = tuple(map(lambda c: c.value, c_it))
         if (not empty(c_it)):
-            acc.append(irecord.parse(c_it))
+            acc.append(measurement.parse(c_it))
         i = i + 1
         print(f'\033[K{bar(i, speed(1))}', end='\n' if n_rows == i else '\r')
         return acc
