@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import openpyxl as xl
 import requests
 
@@ -51,11 +52,15 @@ def make_parser(row_it):
 
 
 if '__main__' == __name__:
-    wb = xl.load_workbook(filename='.git/input.xlsm', read_only=True, data_only=True)
+    if 2 > len(sys.argv):
+        print(log.fmt_err('Missing input file'), file=sys.stderr)
+        sys.exit(1)
+
+    wb = xl.load_workbook(filename=util.second(sys.argv), read_only=True, data_only=True)
     non_empty = lambda c_it: any(map(lambda c: c, c_it))
     row_vals  = lambda c_it: tuple(map(lambda c: c.value, c_it))
     row_it    = tuple(filter(non_empty, map(row_vals, util.drop(1, wb.active.iter_rows()))))
 
-    print(log.fmt_msg('Parsing Excell Sheet:\n'))
+    print(log.fmt_msg('Parsing Sheet:\n'))
     result    = tuple(filter(util.second, map(make_parser(row_it), row_it)))
 

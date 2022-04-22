@@ -7,10 +7,15 @@ from time import time
 
 LINE_WIDTH = 80
 CURR_DATE  = ft.partial(dt.datetime.now, dt.timezone.utc)
+DATE_FMT   = '%Y%m%dT%H%M%S'
 
 
 def fmt_msg(s, f_date=CURR_DATE):
-    return f'[{f_date().strftime("%Y%m%dT%H%M%S")} UTC] {s}'
+    return f'[INFO][{f_date().strftime(DATE_FMT)} UTC] {s}'
+
+
+def fmt_err(s, f_date=CURR_DATE):
+    return f'[ERROR][{f_date().strftime(DATE_FMT)} UTC] {s}'
 
 
 def fmt_fraction(n, d):
