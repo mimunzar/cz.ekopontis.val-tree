@@ -14,7 +14,7 @@ def MATCHES(r):
     return lambda x: r.fullmatch(str(x).strip())
 
 
-VALIDATOR = cl.OrderedDict({
+TREE_VALIDATOR = cl.OrderedDict({
     'ID'                                : util.make_validator(
         f'"ID" must be positive int',
         MATCHES(re.compile(r'\d+'))),
@@ -111,9 +111,9 @@ VALIDATOR = cl.OrderedDict({
         f'"Památný strom (A)" must be one of (A)',
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'A', re.IGNORECASE)))),
 })
-CHECKER = util.make_checker(VALIDATOR)
+TREE_CHECKER = util.make_checker(TREE_VALIDATOR)
 
-def parse(col_it):
-    d = dict(zip(VALIDATOR.keys(), col_it))
-    return (d, CHECKER(d))
+def parse_tree(col_it):
+    d = dict(zip(TREE_VALIDATOR.keys(), col_it))
+    return (d, TREE_CHECKER(d))
 

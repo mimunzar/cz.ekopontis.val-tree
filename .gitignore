@@ -1,4 +1,4 @@
-data/
+.*
 miniconda/
 __pycache__/
 

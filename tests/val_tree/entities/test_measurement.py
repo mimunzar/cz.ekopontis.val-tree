@@ -5,11 +5,11 @@ import src.val_tree.libs.util as util
 
 
 def accepted(k, val_it):
-    return map(util.first, map(measurement.VALIDATOR[k], val_it))
+    return map(util.first, map(measurement.TREE_VALIDATOR[k], val_it))
 
 
 def rejected(k, val_it):
-    return map(util.complement(util.first), map(measurement.VALIDATOR[k], val_it))
+    return map(util.complement(util.first), map(measurement.TREE_VALIDATOR[k], val_it))
 
 
 def test_ROW_VALIDATOR():
