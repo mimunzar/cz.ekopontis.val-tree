@@ -4,13 +4,9 @@ import functools as ft
 import openpyxl as xl
 
 import src.val_tree.entities.measurement as measurement
-import src.val_tree.entities.tree as tree
+import src.val_tree.entities.tree        as tree
 import src.val_tree.libs.log  as log
 import src.val_tree.libs.util as util
-
-
-def col_vals(c_it):
-    return tuple(map(lambda c: c.value, c_it))
 
 
 def empty_row(v_it):
@@ -35,8 +31,12 @@ def make_parser(n_rows):
     return parser
 
 
+def col_vals(c_it):
+    return tuple(map(lambda c: c.value, c_it))
+
+
 def iter_tree_sheet(fpath):
-    ws = xl.load_workbook(filename=fpath, data_only=True).active
-    return ft.reduce(make_parser(ws.max_row - 1),
-            map(col_vals, util.drop(1, ws.iter_rows())), [[], []])
+    ws   = xl.load_workbook(filename=fpath, data_only=True).active
+    v_it = map(col_vals, util.drop(1, ws.iter_rows()))
+    return ft.reduce(make_parser(ws.max_row - 1), v_it, [[], []])
 

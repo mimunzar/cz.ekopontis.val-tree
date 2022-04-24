@@ -72,6 +72,19 @@ def test_any_fn():
     assert util.any_fn(is_zero, is_one)(1)            == True
 
 
+def test_throttle():
+    s = 0;
+    def fake_slepp(n):
+        nonlocal s
+        s = n
+
+    f = util.throttle(lambda: 'foo', 2, f_sleep=fake_slepp)
+    f(f_time=lambda: 0); assert s == 2; s = 0 # start = 0
+    f(f_time=lambda: 2); assert s == 2; s = 0 # start = 2
+    f(f_time=lambda: 5); assert s == 1; s = 0 # start = 4
+    f(f_time=lambda: 8); assert s == 0; s = 0 # start = 6
+
+
 def test_partition_by():
     is_odd = lambda x: x % 2
     assert list(map(list, util.partition_by(is_odd, [])))        == [[], []]

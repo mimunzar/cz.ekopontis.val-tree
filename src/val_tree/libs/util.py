@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import collections as cl
-import functools as ft
-import itertools as it
-import operator  as op
+import functools   as ft
+import itertools   as it
+import operator    as op
+import time
 
 
 def consume(iterable):
@@ -52,6 +53,18 @@ def _any_fn2(f, g):
 
 def any_fn(*f):
     return ft.reduce(_any_fn2, f)
+
+
+def throttle(f, s, f_sleep=time.sleep):
+    start = 0
+    def throttled_f(*args, f_time=time.time):
+        nonlocal start
+        elapsed = f_time() - start
+        start   = start + max(elapsed, s)
+        if (elapsed < s):
+            f_sleep(s - elapsed)
+        return f(*args)
+    return throttled_f
 
 
 def partition_by(fp, iterable):
