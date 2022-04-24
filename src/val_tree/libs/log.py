@@ -51,3 +51,9 @@ def make_avg_rec_sec():
     run_avg = util.make_ravg()
     return lambda n: run_avg(rec_sec(n))
 
+
+def fmt_tree_err(row_i, err_it):
+    err_msg = '\n'.join(map(lambda s: f'  - {s}', err_it))
+    return f'Tree on row {row_i}:\n{err_msg}'
+
+

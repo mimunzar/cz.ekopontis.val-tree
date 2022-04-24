@@ -36,15 +36,15 @@ TREE_VALIDATOR = cl.OrderedDict({
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'\d+([,;]\d+)*[,;]?')))),
 
     'výška stromu [m]'                  : util.make_validator(
-        f'"výška stromu [m]" must be positive',
+        f'"výška stromu [m]" must be positive number',
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'(\d*\.\d+)|(\d+\.?)')))),
 
     'výška nasazení koruny [m]'         : util.make_validator(
-        f'"výška nasazení koruny [m]" must be positive',
+        f'"výška nasazení koruny [m]" must be positive number',
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'(\d*\.\d+)|(\d+\.?)')))),
 
     'průměr koruny [m]'                 : util.make_validator(
-        f'"průměr koruny [m]" must be positive',
+        f'"průměr koruny [m]" must be positive number',
         util.any_fn(OPTIONAL(), MATCHES(re.compile(r'(\d*\.\d+)|(\d+\.?)')))),
 
     'vitalita'                          : util.make_validator(

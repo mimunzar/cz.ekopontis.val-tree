@@ -81,9 +81,9 @@ def test_partition_by():
 
 
 def test_make_validator():
-    assert util.make_validator('Fail', lambda: False)()    == (False, 'Fail')
-    assert util.make_validator('Fail', lambda: True)()     == (True,  'Fail')
-    assert util.make_validator('Fail', lambda x: x % 2)(1) == (True,  'Fail')
+    assert util.make_validator('Fail', lambda: False)()    == (False, 'Fail ()')
+    assert util.make_validator('Fail', lambda: True)()     == (True,  'Fail ()')
+    assert util.make_validator('Fail', lambda x: x % 2)(1) == (True,  'Fail (1)')
 
 
 def test_make_checker():
@@ -91,8 +91,8 @@ def test_make_checker():
         'foo': util.make_validator('Failed foo', lambda x: x > 0),
         'bar': util.make_validator('Failed bar', lambda x: x > 0),
     })
-    assert checker({'foo': 0, 'bar': 0, 'baz': 0}) == ('Failed foo', 'Failed bar',)
-    assert checker({'foo': 0, 'bar': 1, 'baz': 0}) == ('Failed foo',)
+    assert checker({'foo': 0, 'bar': 0, 'baz': 0}) == ('Failed foo (0)', 'Failed bar (0)',)
+    assert checker({'foo': 0, 'bar': 1, 'baz': 0}) == ('Failed foo (0)',)
     assert checker({'foo': 1, 'bar': 1, 'baz': 0}) == tuple()
 
 

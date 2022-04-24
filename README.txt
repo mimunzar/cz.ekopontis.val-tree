@@ -11,10 +11,12 @@ via endpoint located in [2]. It than writes the valuation data to an Excell file
 Installation
 ------------
 
-To install the program execute the following command where "cz.val-tree"  is  an
-example name of the built container:
+To install the  program  navigate  to  the  project's  folder  and  execute  the
+following command:
 
     docker build . -t cz.val-tree
+
+The command builds a container with an example name "cz.val-tree".
 
 
 Usage

@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
+import collections as cl
 import functools as ft
 import itertools as it
 import operator  as op
+
+
+def consume(iterable):
+    cl.deque(iterable, maxlen=0)
 
 
 def take(n, iterable):
@@ -55,7 +60,8 @@ def partition_by(fp, iterable):
 
 
 def make_validator(s, f):
-    return lambda *args: (bool(f(*args)), s)
+    to_str = lambda args: ', '.join(map(str, args))
+    return lambda *args: (bool(f(*args)), f'{s} ({to_str(args)})')
 
 
 def make_checker(Validator):
