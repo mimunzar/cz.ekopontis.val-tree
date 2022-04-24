@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import functools as ft
+
 import src.val_tree.libs.util as util
 
 
-TREE_ID = {
+TREE_OFFSET = {
     "abies sp."                                     : 268,
     "abies alba"                                    : 270,
     "abies alba 'pendula'"                          : 271,
@@ -604,10 +606,40 @@ TREE_ID = {
     "zelkova serrata"                               : 579,
 }
 
+GROWTH_CONDITIONS = {
+    1: "unaffected",
+    2: "good",
+    3: "impaired",
+    4: "extreme",
+}
+
+def growth_conditions(v):
+    return GROWTH_CONDITIONS[int(v)]
+
+
+LOCATION_ATTRACTIVENESS = {
+    1: "high",
+    2: "medium",
+    3: "less_significant",
+    4: "low",
+    5: "very_low",
+}
+
+def loc_attractiveness(v):
+    return LOCATION_ATTRACTIVENESS[int(v)]
+
+
+def optional_apply(f, x):
+    return x if None == x else f(x)
+
+
+def iter_trunk_diameter(x):
+    return map(int, filter(util.identity, str(x).replace(',', ';').split(';')))
+
+
 HABITAT_KEYS = [
     'rozštípnuté dřevo a trhliny (A/R)',
     'dutiny (A/R)',
-    'hniloba (A/R)',
     'suché větve (A/R)',
     'poškození borky (A)',
     'výtok mízy (A)',
@@ -617,50 +649,52 @@ HABITAT_KEYS = [
 ]
 
 
-def is_microhabitat(x):
-    return x in ['a', 'A', 'y', 'Y', '1', True]
+def iter_habitats(keys_it, tags_it, Measurement):
+    h_it = zip(keys_it, util.pluck(keys_it, Measurement) or [])
+    return map(util.first, filter(lambda x: util.second(x) in tags_it, h_it))
 
 
-def is_ext_microhabitat(x):
-    return x in ['r', 'R', 'e', 'E']
+iter_microhabitats     = ft.partial(iter_habitats, HABITAT_KEYS, ['a', 'A'])
+iter_ext_microhabitats = ft.partial(iter_habitats, HABITAT_KEYS, ['r', 'R'])
+HABITAT_CODE = {
+    'dutinky (A)'                       : 'a',
+    'dutiny (A/R)'                      : 'b',
+    'rozštípnuté dřevo a trhliny (A/R)' : 'i',
+    'poškození borky (A)'               : 'h',
+    'suché větve (A/R)'                 : 'j',
+    'výtok mízy (A)'                    : 'm',
+    'zlomené větve (A)'                 : 'f',
+    'plodnice hub (A)'                  : 'g',
+}
+
+def habitat_code(h):
+    return HABITAT_CODE[h]
 
 
-def classify_microhabitats(x):
-    if is_microhabitat(x):     return 'A'
-    if is_ext_microhabitat(x): return 'R'
-    return None
+def iter_names(names):
+    return map(lambda s: s.strip(), names.split(r'|'))
 
 
-def iter_microhabitats(idata, m_it):
-    m_it  = tuple(m_it)
-    kc_it = zip(m_it, map(classify_microhabitats, util.pluck(m_it, idata) or []))
-    return util.partition_by(util.compose(is_microhabitat, util.second), filter(util.second, kc_it))
-
-
-def iter_tree_names(idata):
-    s = idata['Český název | Latinský název']
-    return map(lambda s: s.strip().lower(), s.split(r'|'))
-
-
-def make(idata):
-    cz, lat = iter_tree_names(idata)
-    mh, emh = iter_microhabitats(idata, HABITAT_KEYS)
+def from_measurement(m):
+    cz, lat = iter_names(m['Český název | Latinský název'])
     return {
-        'id'                      : idata['ID'],
-        'tree_id'                 : TREE_ID[lat],
-        'name_cz'                 : cz,
-        'name_lat'                : lat,
-        'diameter_cm_it'          : idata['průměr kmene [cm]'],
-        'height_m'                : idata['výška stromu [m]'],
-        'stem_height_m'           : idata['výška nasazení koruny [m]'],
-        'spread_m'                : idata['průměr koruny [m]'],
-        'vitality'                : idata['vitalita'],
-        'health'                  : idata['zdravotní stav'],
-        'location_attractiveness' : idata['atraktivita umístění'],
-        'growth_conditions'       : idata['růstové podmínky'],
-        'memorial_tree'           : idata['Památný strom (A)'],
-        'removed_crown_perc'      : idata['odstraněná část koruny [%]'],
-        'microhabitats'           : tuple(map(util.first, mh)),
-        'extensive_microhabitats' : tuple(map(util.first, emh)),
+        'taxon_offset'            : TREE_OFFSET[lat.lower()],
+        'taxon'                   : f'{cz} ({lat})',
+        '_taxon_cz'               : cz,
+        '_taxon_lat'              : lat,
+        'diameters'               : tuple(iter_trunk_diameter(m['průměr kmene [cm]'])),
+        'diameters_on_stumps'     : [],
+        'height'                  : optional_apply(float, m['výška stromu [m]']),
+        'stem_height'             : optional_apply(float, m['výška nasazení koruny [m]']),
+        'spread'                  : None,
+        'vitality'                : optional_apply(int, m['vitalita']),
+        'health'                  : optional_apply(int, m['zdravotní stav']),
+        'removed_crown_volume'    : optional_apply(int, m['odstraněná část koruny [%]']),
+        'location_attractiveness' : optional_apply(loc_attractiveness, m['atraktivita umístění']),
+        'growth_conditions'       : optional_apply(growth_conditions,  m['růstové podmínky']),
+        'microhabitats'           : tuple(map(habitat_code, iter_microhabitats(m))),
+        'extensive_microhabitats' : tuple(map(habitat_code, iter_ext_microhabitats(m))),
+        'memorial_tree'           : optional_apply(bool, m['Památný strom (A)']),
+        'deliberately_planted'    : False,
     }
 

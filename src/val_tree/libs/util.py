@@ -35,6 +35,9 @@ def pluck(iterable, d):
     return op.itemgetter(*iterable)(d)
 
 
+def identity(x):
+    return x
+
 def complement(f):
     return lambda *args: not f(*args)
 
@@ -59,10 +62,10 @@ def throttle(f, s, f_sleep=time.sleep):
     start = 0
     def throttled_f(*args, f_time=time.time):
         nonlocal start
-        elapsed = f_time() - start
-        start   = start + max(elapsed, s)
-        if (elapsed < s):
-            f_sleep(s - elapsed)
+        elaps = f_time() - start
+        start = start + max(elaps, s)
+        if (elaps < s):
+            f_sleep(s - elaps)
         return f(*args)
     return throttled_f
 

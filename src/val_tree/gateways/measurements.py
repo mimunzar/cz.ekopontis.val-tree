@@ -25,7 +25,7 @@ def make_parser(n_rows):
         if (not empty_row(val_it)):
             m, e = measurement.parse_tree(val_it)
             if e: ea.append(log.fmt_tree_err(i + 1, e))
-            else: ma.append(m)
+            else: ma.append(tree.from_measurement(m))
         print(f'\033[K{bar(i, speed(1))}', end='\n\n' if n_rows == i else '\r')
         return acc
     return parser
