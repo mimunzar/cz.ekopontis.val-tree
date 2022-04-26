@@ -3,10 +3,8 @@
 import argparse
 import sys
 
+import src.val_tree.adapters.excell as excell
 import src.val_tree.gateways.measurements as measurements
-import src.val_tree.gateways.valuations   as valuations
-import src.val_tree.libs.util as util
-import src.val_tree.libs.log  as log
 
 
 def parse_args(args_it):
@@ -19,14 +17,10 @@ def parse_args(args_it):
 
 
 if '__main__' == __name__:
-    args = parse_args(sys.argv[1:])
+    args        = parse_args(sys.argv[1:])
+    input_sheet = excell.make_adapter(args['input-sheet'])
 
-    print(log.fmt_msg('Parsing tree sheet:\n'))
-    t_it, err_it = measurements.iter_tree_sheet(args['input-sheet'])
-    if (err_it):
-        sys.stderr.write(log.fmt_err('Found errors in tree sheet:\n\n'))
-        util.consume(map(sys.stderr.write, err_it))
-        sys.stderr.write('\nFix errors and re-run the program')
-        sys.exit(1)
-
-    # valuations.iter_tree_vals()
+    #util.dorun(
+    #  map(print_progress
+    result = measurements.iter_trees(input_sheet)
+    #      ))

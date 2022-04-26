@@ -7,7 +7,7 @@ import operator    as op
 import time
 
 
-def consume(iterable):
+def dorun(iterable):
     cl.deque(iterable, maxlen=0)
 
 

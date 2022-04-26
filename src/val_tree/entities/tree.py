@@ -675,26 +675,26 @@ def iter_names(names):
     return map(lambda s: s.strip(), names.split(r'|'))
 
 
-def from_measurement(m):
-    cz, lat = iter_names(m['Český název | Latinský název'])
+def from_measurement(Measurement):
+    cz, lat = iter_names(Measurement['Český název | Latinský název'])
     return {
         'taxon_offset'            : TREE_OFFSET[lat.lower()],
         'taxon'                   : f'{cz} ({lat})',
         '_taxon_cz'               : cz,
         '_taxon_lat'              : lat,
-        'diameters'               : tuple(iter_trunk_diameter(m['průměr kmene [cm]'])),
+        'diameters'               : tuple(iter_trunk_diameter(Measurement['průměr kmene [cm]'])),
         'diameters_on_stumps'     : [],
-        'height'                  : optional_apply(float, m['výška stromu [m]']),
-        'stem_height'             : optional_apply(float, m['výška nasazení koruny [m]']),
+        'height'                  : optional_apply(float, Measurement['výška stromu [m]']),
+        'stem_height'             : optional_apply(float, Measurement['výška nasazení koruny [m]']),
         'spread'                  : None,
-        'vitality'                : optional_apply(int, m['vitalita']),
-        'health'                  : optional_apply(int, m['zdravotní stav']),
-        'removed_crown_volume'    : optional_apply(int, m['odstraněná část koruny [%]']),
-        'location_attractiveness' : optional_apply(loc_attractiveness, m['atraktivita umístění']),
-        'growth_conditions'       : optional_apply(growth_conditions,  m['růstové podmínky']),
-        'microhabitats'           : tuple(map(habitat_code, iter_microhabitats(m))),
-        'extensive_microhabitats' : tuple(map(habitat_code, iter_ext_microhabitats(m))),
-        'memorial_tree'           : optional_apply(bool, m['Památný strom (A)']),
+        'vitality'                : optional_apply(int, Measurement['vitalita']),
+        'health'                  : optional_apply(int, Measurement['zdravotní stav']),
+        'removed_crown_volume'    : optional_apply(int, Measurement['odstraněná část koruny [%]']),
+        'location_attractiveness' : optional_apply(loc_attractiveness, Measurement['atraktivita umístění']),
+        'growth_conditions'       : optional_apply(growth_conditions,  Measurement['růstové podmínky']),
+        'microhabitats'           : tuple(map(habitat_code, iter_microhabitats(Measurement))),
+        'extensive_microhabitats' : tuple(map(habitat_code, iter_ext_microhabitats(Measurement))),
+        'memorial_tree'           : optional_apply(bool, Measurement['Památný strom (A)']),
         'deliberately_planted'    : False,
     }
 
