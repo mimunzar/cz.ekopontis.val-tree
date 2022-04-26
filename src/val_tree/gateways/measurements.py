@@ -13,8 +13,8 @@ def iter_vals(col_it):
     return tuple(map(lambda c: c.value, col_it))
 
 
-def iter_trees(ExcellAdapter):
-    tree_sheet = ExcellAdapter.first_sheet()
+def iter_trees(excell_adp):
+    tree_sheet = util.first(excell_adp.iter_sheets())
     row_it     = filter(not_empty, map(iter_vals, util.drop(1, tree_sheet.iter_rows())))
     return map(tree.from_measurement, map(measurement.from_row, row_it))
 

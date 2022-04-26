@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
-import requests
-
 import src.val_tree.libs.util as util
 
 
-TREE_API_URL = 'https://ocenovanidrevin.nature.cz/hodnota-stromu.php'
+TREE_API = 'https://ocenovanidrevin.nature.cz/hodnota-stromu.php'
 
-def valuate_tree(tree):
-    return requests.post(TREE_API_URL,
-        headers={'Content-Type': 'application/json'},
-        json=tree,
-    )
+class ValuationGateway:
+    def __init__(self, reg_sec, http_adp):
+        self.post = util.throttle(http_adp.post, 1/reg_sec)
 
-def iter_tree_vals(tree_it):
-    return map(util.throttle(valuate_tree, 0.5), tree_it)
+    def valuate_tree(self, tree):
+        return self.post(TREE_API, tree)
 
+
+def make(reg_sec, http_adp):
+    return ValuationGateway(reg_sec, http_adp)
 
