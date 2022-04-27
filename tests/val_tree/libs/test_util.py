@@ -48,6 +48,14 @@ def test_pluck():
     assert util.pluck(['foo', 'bar'], {'foo': 42, 'bar': 43}) == (42, 43)
 
 
+def test_pick():
+    with pytest.raises(KeyError):
+        util.pick(['baz'], {'foo': 42, 'bar': 43})
+    assert util.pick([],             {'foo': 42, 'bar': 43}) == {}
+    assert util.pick(['foo'],        {'foo': 42, 'bar': 43}) == {'foo': 42}
+    assert util.pick(['foo', 'bar'], {'foo': 42, 'bar': 43}) == {'foo': 42, 'bar': 43}
+
+
 def test_complement():
     assert util.complement(lambda: True)()  == False
     assert util.complement(lambda: False)() == True

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import itertools as it
+
+import src.val_tree.libs.util as util
+
+
 TREE_FIELDS = [
     'ID',
     'Název',
@@ -14,14 +19,41 @@ TREE_FIELDS = [
     'Zdravotní Stav',
     'Atraktivita',
     'Biologické Prvky',
+    'Hodnota [CZK]',
 ]
 
 GROWTH_FIELDS = [
     'ID',
 ]
 
+HABITAT_ABBR = {
+    'rozštípnuté dřevo a trhliny (A/R)' : 'TRH',
+    'dutiny (A/R)'                      : 'DUT',
+    'hniloba (A/R)'                     : 'HNI',
+    'suché větve (A/R)'                 : 'SUV',
+    'poškození borky (A)'               : 'BOR',
+    'výtok mízy (A)'                    : 'MIZ',
+    'zlomené větve (A)'                 : 'ZLV',
+    'dutinky (A)'                       : 'DUK',
+    'plodnice hub (A)'                  : 'PHU',
+}
+
+def bio_elements(microhabitats, extensive_microhabitats):
+    habitat_abbr = lambda h: HABITAT_ABBR[h]
+    return dict(it.chain(
+            zip(map(habitat_abbr, microhabitats), it.repeat('A')),
+            zip(map(habitat_abbr, extensive_microhabitats), it.repeat('R')),
+        ))
+
+
 def tree_val_row(tree, valuation):
-    return []
+    hab, ehab = util.pluck(['microhabitats', 'extensive_microhabitats'], tree)
+    return {**tree, **valuation, **{
+            'diameters_cm' : ';'.join(map(str, tree['diameters_cm'])),
+            'radiuses_cm'  : ';'.join(map(str, tree['radiuses_cm'] or [])),
+            'bio_elements' : bio_elements(hab, ehab)
+        },
+    }
 
 
 class StorageGateway:

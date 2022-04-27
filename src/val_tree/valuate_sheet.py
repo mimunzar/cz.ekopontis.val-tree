@@ -33,12 +33,12 @@ if '__main__' == __name__:
     output_sheet = excell_adp.make(output_path(args['input-sheet']))
 
     valuate_tree = ft.partial(valuation.valuate_tree,
-        valuations_gtw.make(args['reg_sec'], http_adp.make()),
-        storage_gtw.make(output_sheet))
+        storage_gtw   .make(output_sheet),
+        valuations_gtw.make(args['reg_sec'], http_adp.make()))
 
     #util.dorun(
     #  map(print_progress
-    # result = map(valuate_tree, measurements_gtw.iter_trees(input_sheet))
+    result = map(valuate_tree, measurements_gtw.iter_trees(input_sheet))
     #      ))
 
     output_sheet.save()

@@ -35,6 +35,13 @@ def pluck(iterable, d):
     return op.itemgetter(*iterable)(d)
 
 
+def pick(iterable, d):
+    def do(acc, k):
+        acc[k] = d[k]
+        return acc
+    return ft.reduce(do, iterable, {})
+
+
 def identity(x):
     return x
 

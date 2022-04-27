@@ -11,12 +11,12 @@ def test_iter_names():
     assert list(tree.iter_names(' foo | bar ')) == ['foo', 'bar']
 
 
-def test_iter_trunk_diameter():
-    assert list(tree.iter_trunk_diameter(42))       == [42]
-    assert list(tree.iter_trunk_diameter('42'))     == [42]
-    assert list(tree.iter_trunk_diameter('42;43'))  == [42, 43]
-    assert list(tree.iter_trunk_diameter('42;43;')) == [42, 43]
-    assert list(tree.iter_trunk_diameter('42,43,')) == [42, 43]
+def test_iter_int_csv():
+    assert list(tree.iter_int_csv(42))       == [42]
+    assert list(tree.iter_int_csv('42'))     == [42]
+    assert list(tree.iter_int_csv('42;43'))  == [42, 43]
+    assert list(tree.iter_int_csv('42;43;')) == [42, 43]
+    assert list(tree.iter_int_csv('42,43,')) == [42, 43]
 
 
 def test_iter_habitats():
@@ -56,23 +56,27 @@ def test_from_measurement():
         'Památný strom (A)': None
     }
     assert tree.from_measurement(m) == {
-        'taxon_offset': 319,
-        'taxon': 'jilm horský (Ulmus glabra)',
-        '_taxon_cz': 'jilm horský',
-        '_taxon_lat': 'Ulmus glabra',
-        'diameters': (38,),
-        'diameters_on_stumps': [],
-        'height': 15.0,
-        'stem_height': None,
-        'spread': None,
-        'vitality': '1',
-        'health': '1',
-        'removed_crown_volume': None,
-        'location_attractiveness': 'less_significant',
-        'growth_conditions': 'good',
-        'microhabitats': ('i', 'b', 'j', 'h', 'm', 'f', 'a'),
+        'id': 1,
+        'name': 'jilm horský',
+        'name_lat': 'Ulmus glabra',
+        'diameters_cm': (38,),
+        'radiuses_cm': None,
+        'height_m': 15.0,
+        'stem_height_m': None,
+        'vitality': 1,
+        'health': 1,
+        'crown_diameter_m': None,
+        'removed_crown_volume_perc': None,
+        'location_attractiveness': 3,
+        'growth_conditions': 2,
+        'microhabitats': ('rozštípnuté dřevo a trhliny (A/R)',
+            'dutiny (A/R)',
+            'suché větve (A/R)',
+            'poškození borky (A)',
+            'výtok mízy (A)',
+            'zlomené větve (A)',
+            'dutinky (A)'),
         'extensive_microhabitats': (),
-        'memorial_tree': None,
-        'deliberately_planted': False,
+        'memorial_tree': False
     }
 
