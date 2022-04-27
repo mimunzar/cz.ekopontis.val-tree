@@ -38,7 +38,7 @@ if '__main__' == __name__:
 
     #util.dorun(
     #  map(print_progress
-    result = map(valuate_tree, measurements_gtw.iter_trees(input_sheet))
+    # result = map(valuate_tree, measurements_gtw.iter_trees(input_sheet))
     #      ))
 
     output_sheet.save()
