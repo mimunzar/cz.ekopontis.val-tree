@@ -38,9 +38,6 @@ class ExcellAdapter:
             return self.wb[title]
         return self.wb.create_sheet(title)
 
-    def iter_sheets(self):
-        return self.wb.worksheets
-
     def write_header(self, ws, data_it):
         ws.delete_rows(1)
         ws.insert_rows(1)

@@ -38,6 +38,7 @@ def pluck(iterable, d):
 def identity(x):
     return x
 
+
 def complement(f):
     return lambda *args: not f(*args)
 
@@ -80,9 +81,9 @@ def make_validator(s, f):
     return lambda *args: (bool(f(*args)), f'{s} ({to_str(args)})')
 
 
-def make_checker(Validator):
-    def checker(d):
-        val_it = it.starmap(lambda k, f: f(d[k]), Validator.items())
+def make_checker(validator_dt):
+    def checker(dt):
+        val_it = it.starmap(lambda k, f: f(dt[k]), validator_dt.items())
         return tuple(map(second, filter(complement(first), val_it)))
     return checker
 
