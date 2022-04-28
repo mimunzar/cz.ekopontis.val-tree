@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import src.val_tree.entities.valuation as valuation
 import src.val_tree.libs.util as util
 
 
@@ -672,7 +673,7 @@ class ValuationGateway:
         self.post = util.throttle(http_adp.post, 1/reg_sec)
 
     def valuate_tree(self, tree):
-        return self.post(TREE_API, from_tree(tree))
+        return valuation.from_response(self.post(TREE_API, from_tree(tree)))
 
 
 def make(reg_sec, http_adp):

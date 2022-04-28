@@ -113,9 +113,10 @@ TREE_VALIDATOR = cl.OrderedDict({
 })
 TREE_CHECKER = util.make_checker(TREE_VALIDATOR)
 
-def from_row(ROW):
-    m = dict(zip(TREE_VALIDATOR.keys(), ROW))
-    e = TREE_CHECKER(m)
-    if e: raise ValueError(f'Failed to parse measurement (", ".join(err))')
+def from_row(row):
+    m   = dict(zip(TREE_VALIDATOR.keys(), row))
+    err = TREE_CHECKER(m)
+    if err:
+        raise ValueError(f'Failed to parse measurement ({", ".join(err)})')
     return m
 

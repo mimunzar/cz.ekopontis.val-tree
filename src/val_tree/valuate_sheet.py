@@ -11,6 +11,7 @@ import src.val_tree.gateways.measurements as measurements_gtw
 import src.val_tree.gateways.valuations as valuations_gtw
 import src.val_tree.gateways.storage as storage_gtw
 import src.val_tree.use_cases.valuation as valuation
+import src.val_tree.libs.util as util
 
 
 def parse_args(args_it):
@@ -38,7 +39,7 @@ if '__main__' == __name__:
 
     #util.dorun(
     #  map(print_progress
-    result = map(valuate_tree, measurements_gtw.iter_trees(input_sheet))
+    result = tuple(map(valuate_tree, util.take(2, measurements_gtw.iter_trees(input_sheet))))
     #      ))
 
     output_sheet.save()
