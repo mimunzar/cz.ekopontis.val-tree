@@ -8,8 +8,8 @@ import sys
 import src.val_tree.adapters.http as http_adp
 import src.val_tree.adapters.excell as excell_adp
 import src.val_tree.gateways.measurements as measurements_gtw
-import src.val_tree.gateways.valuations as valuations_gtw
-import src.val_tree.gateways.storage as storage_gtw
+import src.val_tree.gateways.valuations as valuation_gtw
+import src.val_tree.presenters.trees as tree_pre
 import src.val_tree.use_cases.valuation as valuation
 import src.val_tree.libs.util as util
 
@@ -34,8 +34,8 @@ if '__main__' == __name__:
     output_sheet = excell_adp.make(output_path(args['input-sheet']))
 
     valuate_tree = ft.partial(valuation.valuate_tree,
-        storage_gtw   .make(output_sheet),
-        valuations_gtw.make(args['reg_sec'], http_adp.make()))
+        valuation_gtw.make(args['reg_sec'], http_adp.make()),
+        tree_pre     .make(output_sheet))
 
     #util.dorun(
     #  map(print_progress
