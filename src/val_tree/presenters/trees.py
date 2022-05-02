@@ -41,6 +41,7 @@ PRESS_DATA = cl.OrderedDict({
     'Vitalita'              : lambda t, _: t['vitality'],
     'Zdravotní Stav'        : lambda t, _: t['health'],
     'Atraktivita'           : lambda t, _: t['location_attractiveness'],
+    'Památný Strom'         : lambda t, _: t['memorial_tree'],
     'Biologické Prvky'      : lambda t, _: \
         iter_bio_elements(*util.pluck(['microhabitats', 'extensive_microhabitats'], t)),
     'Hodnota [CZK]'         : lambda _, v: v['value_czk'],
@@ -70,8 +71,9 @@ HEADER = {
     'Vitalita'              : lambda w: excell.cell(w, 1, 10, 'Vitalita'),
     'Zdravotní Stav'        : lambda w: excell.cell(w, 1, 11, 'Zdravotní Stav'),
     'Atraktivita'           : lambda w: excell.cell(w, 1, 12, 'Atraktivita'),
-    'Biologické Prvky'      : lambda w: excell.col_merged_cell(w, 1, 13, 2, 'Biologické Prvky'),
-    'Hodnota [CZK]'         : lambda w: excell.cell(w, 1, 15, 'Hodnota [CZK]'),
+    'Památný Strom'         : lambda w: excell.cell(w, 1, 13, 'Památný Strom'),
+    'Biologické Prvky'      : lambda w: excell.col_merged_cell(w, 1, 14, 2, 'Biologické Prvky'),
+    'Hodnota [CZK]'         : lambda w: excell.cell(w, 1, 16, 'Hodnota [CZK]'),
 }
 ROW = {
     'ID'                    : lambda w, r, m, t: excell.row_merged_cell(w, r,  1, m, t['ID']),
@@ -86,9 +88,10 @@ ROW = {
     'Vitalita'              : lambda w, r, m, t: excell.row_merged_cell(w, r, 10, m, t['Vitalita']),
     'Zdravotní Stav'        : lambda w, r, m, t: excell.row_merged_cell(w, r, 11, m, t['Zdravotní Stav']),
     'Atraktivita'           : lambda w, r, m, t: excell.row_merged_cell(w, r, 12, m, t['Atraktivita']),
-    'Biologické Prvky'      : lambda w, r, _, t: bio_elements_cells    (w, r, 13, t['Biologické Prvky']),
+    'Památný Strom'         : lambda w, r, m, t: excell.row_merged_cell(w, r, 13, m, 'A' if t['Památný Strom'] else ''),
+    'Biologické Prvky'      : lambda w, r, _, t: bio_elements_cells    (w, r, 14, t['Biologické Prvky']),
     'Hodnota [CZK]'         : lambda w, r, m, t: \
-            excell.cell_comma_sep(excell.row_merged_cell(w, r, 15, m, t['Hodnota [CZK]'])),
+            excell.cell_comma_sep(excell.row_merged_cell(w, r, 16, m, t['Hodnota [CZK]'])),
 }
 
 def write_header(ws, label_it):
