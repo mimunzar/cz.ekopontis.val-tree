@@ -5,12 +5,15 @@ import functools as ft
 import os
 import openpyxl as xl
 import openpyxl.styles as xl_styles
+import openpyxl.utils  as xl_utils
 
-import src.val_tree.libs.util as util
+
+def fit_row_height(ws, r_idx, n_chars):
+    ws.row_dimensions[r_idx].height = 6*n_chars
 
 
-def fit_row_height(ws, r_idx, d_it):
-    ws.row_dimensions[r_idx].height = 6*max(map(len, d_it))
+def fit_col_width(ws, c_idx, n_chars):
+    ws.column_dimensions[xl_utils.get_column_letter(c_idx)].width = 1.2*n_chars
 
 
 def cell_alignment(params, c):
@@ -46,13 +49,6 @@ def create_workbook():
 
 def load_workbook(fpath):
     return xl.load_workbook(fpath, data_only=True)
-
-
-def bio_cells(ws, r_idx, c_idx, el_it):
-    util.dorun(it.starmap(
-        lambda r, x: cell(ws, r, c_idx, x),     enumerate(map(util.first,  el_it), r_idx)))
-    util.dorun(it.starmap(
-        lambda r, x: cell(ws, r, c_idx + 1, x), enumerate(map(util.second, el_it), r_idx)))
 
 
 ALING_CENTER_2D = {'horizontal': 'center', 'vertical': 'center'}

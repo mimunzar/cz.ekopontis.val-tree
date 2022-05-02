@@ -50,6 +50,13 @@ def present(tree, value):
     return dict(it.starmap(lambda k, f: (k, f(tree, value)), PRESS_DATA.items()))
 
 
+def bio_elements_cells(ws, r_idx, c_idx, el_it):
+    util.dorun(it.starmap(
+        lambda r, x: excell.cell(ws, r, c_idx, x),     enumerate(map(util.first,  el_it), r_idx)))
+    util.dorun(it.starmap(
+        lambda r, x: excell.cell(ws, r, c_idx + 1, x), enumerate(map(util.second, el_it), r_idx)))
+
+
 HEADER = {
     'ID'                    : lambda w: excell.cell(w, 1,  1, 'ID'),
     'Název'                 : lambda w: excell.cell(w, 1,  2, 'Název'),
@@ -79,7 +86,7 @@ ROW = {
     'Vitalita'              : lambda w, r, m, t: excell.row_merged_cell(w, r, 10, m, t['Vitalita']),
     'Zdravotní Stav'        : lambda w, r, m, t: excell.row_merged_cell(w, r, 11, m, t['Zdravotní Stav']),
     'Atraktivita'           : lambda w, r, m, t: excell.row_merged_cell(w, r, 12, m, t['Atraktivita']),
-    'Biologické Prvky'      : lambda w, r, _, t: excell.bio_cells(w, r, 13, t['Biologické Prvky']),
+    'Biologické Prvky'      : lambda w, r, _, t: bio_elements_cells    (w, r, 13, t['Biologické Prvky']),
     'Hodnota [CZK]'         : lambda w, r, m, t: \
             excell.cell_comma_sep(excell.row_merged_cell(w, r, 15, m, t['Hodnota [CZK]'])),
 }
@@ -100,7 +107,7 @@ def write_header(ws, label_it):
     util.dorun(map(ft.partial(excell.cell_alignment, {
         'horizontal' : 'center',
         'vertical'   : 'center'}), util.take(1, cell_it)))
-    excell.fit_row_height(ws, 1, label_it)
+    excell.fit_row_height(ws, 1, max(map(len, label_it)))
 
 
 def append_valuation(ws, r_idx, tree_val):
@@ -110,17 +117,24 @@ def append_valuation(ws, r_idx, tree_val):
 
 
 class TreePresenter:
-    def __init__(self, excell_adp):
-        self.r_idx      = 2
-        self.excell_adp = excell_adp
-        self.tree_sheet = excell_adp.open_sheet('oceneni_stromy')
+    def __init__(self, workbook):
+        self.workbook   = workbook
+        self.tree_sheet = workbook.open_sheet('oceneni_stromy')
         write_header(self.tree_sheet, ROW.keys())
 
+        self.r_idx            = 2
+        self.name_max_len     = 0
+        self.lat_name_max_len = 0
+
     def write_valuation(self, tree, value):
-        self.r_idx = append_valuation(self.tree_sheet, self.r_idx, present(tree, value))
+        self.r_idx            = append_valuation(self.tree_sheet, self.r_idx, present(tree, value))
+        self.name_max_len     = max(self.name_max_len,     len(tree['name']))
+        self.lat_name_max_len = max(self.lat_name_max_len, len(tree['name_lat']))
+        excell.fit_col_width(self.tree_sheet, 2, self.name_max_len)
+        excell.fit_col_width(self.tree_sheet, 3, self.lat_name_max_len)
         return (tree, value)
 
 
-def make(excell_adp):
-    return TreePresenter(excell_adp)
+def make(workbook):
+    return TreePresenter(workbook)
 
