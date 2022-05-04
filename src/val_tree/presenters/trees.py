@@ -30,8 +30,8 @@ def iter_bio_elements(microhabitats, extensive_microhabitats):
 
 PRESS_DATA = cl.OrderedDict({
     'ID'                    : lambda t, _: t['id'],
-    'Název'                 : lambda t, _: t['name'],
-    'Název Lat.'            : lambda t, _: t['name_lat'],
+    'Název'                 : lambda t, _: t['name'].capitalize(),
+    'Název Lat.'            : lambda t, _: t['name_lat'].capitalize(),
     'Průměr Kmene [cm]'     : lambda t, _: ';'.join(map(str, t['diameters_cm'])),
     'Obvod Kmene [cm]'      : lambda t, _: ';'.join(map(str, t['radiuses_cm'] or [])),
     'Výška Stromu [m]'      : lambda t, _: t['height_m'],
@@ -41,7 +41,7 @@ PRESS_DATA = cl.OrderedDict({
     'Vitalita'              : lambda t, _: t['vitality'],
     'Zdravotní Stav'        : lambda t, _: t['health'],
     'Atraktivita'           : lambda t, _: t['location_attractiveness'],
-    'Památný Strom'         : lambda t, _: t['memorial_tree'],
+    'Památný Strom'         : lambda t, _: 'A' if t['memorial_tree'] else '',
     'Biologické Prvky'      : lambda t, _: \
         iter_bio_elements(*util.pluck(['microhabitats', 'extensive_microhabitats'], t)),
     'Hodnota [CZK]'         : lambda _, v: v['value_czk'],
@@ -88,7 +88,7 @@ ROW = {
     'Vitalita'              : lambda w, r, m, t: excell.row_merged_cell(w, r, 10, m, t['Vitalita']),
     'Zdravotní Stav'        : lambda w, r, m, t: excell.row_merged_cell(w, r, 11, m, t['Zdravotní Stav']),
     'Atraktivita'           : lambda w, r, m, t: excell.row_merged_cell(w, r, 12, m, t['Atraktivita']),
-    'Památný Strom'         : lambda w, r, m, t: excell.row_merged_cell(w, r, 13, m, 'A' if t['Památný Strom'] else ''),
+    'Památný Strom'         : lambda w, r, m, t: excell.row_merged_cell(w, r, 13, m, t['Památný Strom']),
     'Biologické Prvky'      : lambda w, r, _, t: bio_elements_cells    (w, r, 14, t['Biologické Prvky']),
     'Hodnota [CZK]'         : lambda w, r, m, t: \
             excell.cell_comma_sep(excell.row_merged_cell(w, r, 16, m, t['Hodnota [CZK]'])),
@@ -136,6 +136,11 @@ class TreePresenter:
         excell.fit_col_width(self.tree_sheet, 2, self.name_max_len)
         excell.fit_col_width(self.tree_sheet, 3, self.lat_name_max_len)
         return (tree, value)
+
+    def write_footer(self):
+        data_it   = it.starmap(lambda k, v: (v, k), HABITAT_ABBR.items())
+        write_row = util.compose(util.dorun, ft.partial(excell.iter_cell_row, self.tree_sheet))
+        util.dorun(it.starmap(write_row, enumerate(data_it, self.r_idx + 2)))
 
 
 def make(workbook):
