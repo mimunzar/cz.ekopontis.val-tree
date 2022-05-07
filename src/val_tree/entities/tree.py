@@ -36,7 +36,7 @@ def iter_names(names):
     return map(lambda s: s.strip(), names.split(r'|'))
 
 
-def from_measurement(m):
+def from_tree_dat(m):
     cz, lat = iter_names(m['Český název | Latinský název'])
     return {
         'id'                       : m['ID'],

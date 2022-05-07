@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 import src.val_tree.entities.tree as tree
-import src.val_tree.gateways.valuations as valuations
+import src.val_tree.gateways.ochranaprirody as ochranaprirody
 import tests.val_tree.constants as constants
 
 
 def test_from_tree():
-    t = tree.from_measurement(constants.MEASUREMENT)
-    assert valuations.from_tree(t) == {
+    t = tree.from_tree_dat(constants.MEASUREMENT)
+    assert ochranaprirody.from_tree(t) == {
         'taxon_offset': 319,
         'taxon': 'jilm horský (Ulmus glabra)',
         '_taxon_cz': 'jilm horský',

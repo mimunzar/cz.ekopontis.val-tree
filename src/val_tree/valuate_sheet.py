@@ -7,9 +7,9 @@ import sys
 
 import src.val_tree.adapters.http as http_adp
 import src.val_tree.adapters.excell as excell_adp
-import src.val_tree.gateways.measurements as measurements_gtw
-import src.val_tree.gateways.valuations as valuation_gtw
-import src.val_tree.presenters.trees as tree_pre
+import src.val_tree.gateways.tree_dat as tree_dat
+import src.val_tree.gateways.ochranaprirody as ochranaprirody
+import src.val_tree.presenters.tree_est as tree_est
 import src.val_tree.use_cases.valuate_tree as valuate_tree
 import src.val_tree.libs.util as util
 
@@ -33,15 +33,18 @@ if '__main__' == __name__:
     input_sheet  = excell_adp.make(args['input-sheet'])
     output_sheet = excell_adp.make(output_path(args['input-sheet']))
 
-    tree_pre = tree_pre.make(output_sheet)
+    # filter(lambda x: isinstance(x, int),
+    #         output_sheet.wb.active.iter_cols(min_col=1, max_col=1, values_only=True))
+
+    tree_est = tree_est.make(output_sheet)
     val_tree = ft.partial(valuate_tree.valuate,
-        valuation_gtw.make(args['reg_sec'], http_adp.make()), tree_pre)
+        ochranaprirody.make(args['reg_sec'], http_adp.make()), tree_est)
 
     #util.dorun(
     #  map(print_progress
-    result = tuple(map(val_tree, util.take(2, measurements_gtw.iter_trees(input_sheet))))
+    result = tuple(map(val_tree, util.take(2, tree_dat.iter_trees(input_sheet))))
     #      ))
 
-    tree_pre.write_footer()
+    tree_est.write_footer()
     output_sheet.save()
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
 
-def valuate(valuation_gtw, tree_pre, tree):
-    return tree_pre.write_valuation(tree, valuation_gtw.valuate_tree(tree))
+def valuate(ochrana_prirody, tree_presenter, tree):
+    return tree_presenter.write_valuation(tree, ochrana_prirody.valuate_tree(tree))
 

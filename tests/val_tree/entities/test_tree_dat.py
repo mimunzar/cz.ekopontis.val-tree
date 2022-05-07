@@ -2,16 +2,16 @@
 
 import pytest
 
-import src.val_tree.entities.measurement as measurement
+import src.val_tree.entities.tree_dat as tree_dat
 import src.val_tree.libs.util as util
 
 
 def accepted(k, val_it):
-    return map(util.first, map(measurement.TREE_VALIDATOR[k], val_it))
+    return map(util.first, map(tree_dat.TREE_VALIDATOR[k], val_it))
 
 
 def rejected(k, val_it):
-    return map(util.complement(util.first), map(measurement.TREE_VALIDATOR[k], val_it))
+    return map(util.complement(util.first), map(tree_dat.TREE_VALIDATOR[k], val_it))
 
 
 def test_ROW_VALIDATOR():
@@ -73,11 +73,11 @@ def test_ROW_VALIDATOR():
         assert all(rejected(c, [42, 'foo']))
 
 
-def test_from_row():
+def test_from_data_row():
     row = [ 1, 'S', 'jilm horský | Ulmus glabra', '38', None, 15, None, None, 1, 1, 3, 2, 3, None, 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', None, None, None, None]
     with pytest.raises(ValueError):
-        measurement.from_row(['foo', *row[1:]])
-    assert measurement.from_row(row) == {
+        tree_dat.from_data_row(['foo', *row[1:]])
+    assert tree_dat.from_data_row(row) == {
         'ID': 1,
         'S/P': 'S',
         'Český název | Latinský název': 'jilm horský | Ulmus glabra',

@@ -55,7 +55,7 @@ def test_from_measurement():
         'plodnice hub (A)': None,
         'Památný strom (A)': None
     }
-    assert tree.from_measurement(m) == {
+    assert tree.from_tree_dat(m) == {
         'id': 1,
         'name': 'jilm horský',
         'name_lat': 'Ulmus glabra',

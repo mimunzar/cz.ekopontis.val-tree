@@ -113,7 +113,7 @@ TREE_VALIDATOR = cl.OrderedDict({
 })
 TREE_CHECKER = util.make_checker(TREE_VALIDATOR)
 
-def from_row(row):
+def from_data_row(row):
     m   = dict(zip(TREE_VALIDATOR.keys(), row))
     err = TREE_CHECKER(m)
     if err:
