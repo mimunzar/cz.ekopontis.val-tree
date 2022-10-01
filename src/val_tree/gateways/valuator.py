@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
-import src.val_tree.entities.tree_est as tree_est
-import src.val_tree.libs.util as util
+import collections as cl
+
+import src.val_tree.libs.adapter_http as adapter_http
+import src.val_tree.libs.util         as util
 
 
 TREE_API    = 'https://ocenovanidrevin.nature.cz/hodnota-stromu.php'
@@ -419,6 +421,7 @@ TREE_OFFSET = {
     "populus x canadensis"                          : 527,
     "populus x canescens"                           : 534,
     "prunus sp."                                    : 36,
+    "prunus spinosa"                                : 36,
     "prunus sp."                                    : 384,
     "prunus sp."                                    : 438,
     "prunus sp."                                    : 446,
@@ -457,6 +460,7 @@ TREE_OFFSET = {
     "prunus x yedoensis 'shidare yoshino'"          : 560,
     "pseudolarix amabilis"                          : 426,
     "pseudotsuga sp."                               : 129,
+    "pseudostsuga menziesii"                        : 130,
     "pseudotsuga menziesii"                         : 130,
     "pseudotsuga menziesii 'glauca pendula'"        : 131,
     "pseudotsuga menziesii var. glauca"             : 132,
@@ -571,6 +575,7 @@ TREE_OFFSET = {
     "tilia cordata 'roelvo'"                        : 368,
     "tilia cordata 'winter orange'"                 : 369,
     "tilia petiolaris"                              : 363,
+    "tilia platyphylos"                             : 372,
     "tilia platyphyllos"                            : 372,
     "tilia platyphyllos 'laciniata'"                : 373,
     "tilia platyphyllos 'örebro'"                   : 374,
@@ -606,76 +611,51 @@ TREE_OFFSET = {
     "zelkova serrata"                               : 579,
 }
 
-HABITAT_CODE = {
-    'dutinky (A)'                       : 'a',
-    'dutiny (A/R)'                      : 'b',
-    'rozštípnuté dřevo a trhliny (A/R)' : 'i',
-    'poškození borky (A)'               : 'h',
-    'suché větve (A/R)'                 : 'j',
-    'výtok mízy (A)'                    : 'm',
-    'zlomené větve (A)'                 : 'f',
-    'plodnice hub (A)'                  : 'g',
+TREE_LOC_ATTR = {
+    1: 'high',
+    2: 'medium',
+    3: 'less_significant',
+    4: 'low',
+    5: 'very_low',
 }
 
-def habitat_code(h):
-    return HABITAT_CODE[h]
-
-
-LOCATION_ATTRACTIVENESS = {
-    1: "high",
-    2: "medium",
-    3: "less_significant",
-    4: "low",
-    5: "very_low",
+TREE_GRW_COND = {
+    1: 'unaffected',
+    2: 'good',
+    3: 'impaired',
+    4: 'extreme',
 }
 
-def attrac_code(v):
-    return LOCATION_ATTRACTIVENESS[int(v)]
+ValuatedTree = cl.namedtuple('ValuatedTree', [
+    'tree',
+    'value_czk',
+])
 
-
-GROWTH_CONDITIONS = {
-    1: "unaffected",
-    2: "good",
-    3: "impaired",
-    4: "extreme",
-}
-
-def growth_code(v):
-    return GROWTH_CONDITIONS[int(v)]
-
-
-def from_tree(tree):
-    cz, lat = util.pluck(['name', 'name_lat'], tree)
-    return {
-        'taxon_offset'            : TREE_OFFSET[lat.lower()],
-        'taxon'                   : f'{cz} ({lat})',
-        '_taxon_cz'               : cz,
-        '_taxon_lat'              : lat,
-        'diameters'               : tree['diameters_cm'],
-        'diameters_on_stumps'     : [],
-        'height'                  : tree['height_m'],
-        'stem_height'             : tree['stem_height_m'],
-        'spread'                  : None,
-        'vitality'                : str(tree['vitality']),
-        'health'                  : str(tree['health']),
-        'removed_crown_volume'    : tree['removed_crown_volume_perc'],
-        'location_attractiveness' : attrac_code(tree['location_attractiveness']),
-        'growth_conditions'       : growth_code(tree['growth_conditions']),
-        'microhabitats'           : tuple(map(habitat_code, tree['microhabitats'])),
-        'extensive_microhabitats' : tuple(map(habitat_code, tree['extensive_microhabitats'])),
-        'memorial_tree'           : tree['memorial_tree'],
-        'deliberately_planted'    : False,
-    }
-
-
-class ValuationGateway:
-    def __init__(self, reg_sec, http_adp):
-        self.post = util.throttle(http_adp.post, 1/reg_sec)
-
-    def valuate_tree(self, tree):
-        return tree_est.from_response(self.post(TREE_API, from_tree(tree)))
-
-
-def make(reg_sec, http_adp):
-    return ValuationGateway(reg_sec, http_adp)
+def make_tree_valuator(trees_per_sec):
+    http = adapter_http.make()
+    post = util.throttle(http.post, 1/trees_per_sec)
+    def tree_valuator(aTree):
+        response  = post(TREE_API, {
+            'taxon'                  : f'{aTree.name_cz} ({aTree.name_lat})',
+            'diameters'              : util.mapt(lambda x: max(5, x), aTree.diameters_cm),
+            #^ The minimum diameter for a Tree to be valuated is 5cm
+            'diameters_on_stumps'    : [],
+            'height'                 : int(aTree.height_m),
+            'stem_height'            : None,
+            'spread'                 : None,
+            'vitality'               : str(aTree.vitality),
+            'health'                 : str(aTree.health),
+            'removed_crown_volume'   : None,
+            'location_attractiveness': TREE_LOC_ATTR[int(aTree.location_attractiveness)],
+            'growth_conditions'      : TREE_GRW_COND[int(aTree.growth_conditions)],
+            'microhabitats'          : [],
+            'extensive_microhabitats': [],
+            'taxon_offset'           : TREE_OFFSET[aTree.name_lat.lower()],
+            '_taxon_cz'              : aTree.name_cz,
+            '_taxon_lat'             : aTree.name_lat,
+            'memorial_tree'          : False,
+            'deliberately_planted'   : False
+        })
+        return ValuatedTree(tree = aTree, value_czk = response['value_in_czk'])
+    return tree_valuator
 

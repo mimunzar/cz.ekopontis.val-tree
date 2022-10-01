@@ -1,4 +1,4 @@
-name: cz.val-tree
+name: cz.ekopontis.val-tree
 channels:
   - defaults
 dependencies:

@@ -8,7 +8,9 @@ class HTTPAdapter:
         self.headers = {'Content-Type': 'application/json'}
 
     def post(self, url, data):
-        r = requests.post(url, headers=self.headers, json=data)
+        r = requests.post(url,
+          headers = self.headers,
+          json    = data)
         r.raise_for_status()
         return r.json()
 
