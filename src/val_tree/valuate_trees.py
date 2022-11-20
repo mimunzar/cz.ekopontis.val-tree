@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import argparse
 import sys
 import os
@@ -20,6 +19,12 @@ def parse_args(args_it):
         help    = 'The number of valuated items per second',
         metavar = 'NUM',
         type    = int)
+    parser.add_argument('--n-taxons',
+        help    = 'The number of taxons to process',
+        required= False,
+        default = None,
+        type    = int,
+        metavar = 'NUM')
     return vars(parser.parse_args(args_it))
 
 
@@ -27,12 +32,12 @@ def count_trees_written(output_fpath):
     result = 0
     if os.path.exists(output_fpath):
         with open(output_fpath, 'r') as f:
-            result = sum(1 for _ in f)
+            result = sum(map(util.constantly(1), f))
             print(f'Found file with {result} lines written')
     return result
 
 
-def valuate_new_trees(output_fpath, input_fpath, trees_per_sec, **_):
+def valuate_new_trees(output_fpath, input_fpath, n_taxons, trees_per_sec, **_):
     iworkbook     = adapter_excell.make(input_fpath)
     tree_sheet    = iworkbook.open_sheet('Stromy')
     trees_written = count_trees_written(output_fpath)
@@ -43,7 +48,9 @@ def valuate_new_trees(output_fpath, input_fpath, trees_per_sec, **_):
             writer  .make_tree_writer(f, should_write_header),
             valuator.make_tree_valuator(trees_per_sec),
             reader  .make_tree_parser(),
-        ), util.drop(skip_n_lines, tree_sheet.iter_rows(values_only = True))))
+        ), util.take(n_taxons, util.drop(
+            skip_n_lines, tree_sheet.iter_rows(values_only = True)))))
+    print('Done')
 
 
 if '__main__' == __name__:

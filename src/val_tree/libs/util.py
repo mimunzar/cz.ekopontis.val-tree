@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import collections as cl
 import functools   as ft
 import itertools   as it
@@ -55,6 +54,10 @@ def identity(x):
     return x
 
 
+def constantly(x):
+    return lambda *_: x
+
+
 def complement(fn):
     return lambda *args: not fn(*args)
 
@@ -83,24 +86,12 @@ def throttle(fn, subsec, fn_sleep=time.sleep):
     return throttled_fn
 
 
-def make_validator(s, f):
+def make_validator(s, fn):
     to_str = lambda args: ', '.join(map(str, args))
-    return lambda *args: (bool(f(*args)), f'{s} ({to_str(args)})')
+    return lambda *args: (bool(fn(*args)), f'{s} ({to_str(args)})')
 
 
-def make_checker(validator_dt):
-    def checker(dt):
-        val_it = it.starmap(lambda k, f: f(dt[k]), validator_dt.items())
-        return tuple(map(second, filter(complement(first), val_it)))
-    return checker
-
-
-def make_ravg():
-    i, avg = (0, 0)
-    def ravg(n):
-        nonlocal i, avg
-        i   = i + 1
-        avg = (avg*(i - 1) + n)/i
-        return avg
-    return ravg
+def validate_dict(val_d, d):
+    return mapt(second, filter(complement(first),
+            it.starmap(lambda k, fn: fn(d[k]), val_d.items())))
 

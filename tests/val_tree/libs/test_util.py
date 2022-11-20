@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+import functools as ft
 
 import pytest
+
 import src.val_tree.libs.util as util
 
 
@@ -56,6 +58,12 @@ def test_pick():
     assert util.pick(['foo', 'bar'], {'foo': 42, 'bar': 43}) == {'foo': 42, 'bar': 43}
 
 
+def test_constantly():
+    assert util.constantly(42)()             == 42
+    assert util.constantly(42)('foo')        == 42
+    assert util.constantly(42)('foo', 'bar') == 42
+
+
 def test_complement():
     assert util.complement(lambda: True)()  == False
     assert util.complement(lambda: False)() == True
@@ -107,21 +115,12 @@ def test_make_validator():
     assert util.make_validator('Fail', lambda x: x % 2)(1) == (True,  'Fail (1)')
 
 
-def test_make_checker():
-    checker = util.make_checker({
+def test_validate_dict():
+    checker = ft.partial(util.validate_dict, {
         'foo': util.make_validator('Failed foo', lambda x: x > 0),
         'bar': util.make_validator('Failed bar', lambda x: x > 0),
     })
     assert checker({'foo': 0, 'bar': 0, 'baz': 0}) == ('Failed foo (0)', 'Failed bar (0)',)
     assert checker({'foo': 0, 'bar': 1, 'baz': 0}) == ('Failed foo (0)',)
     assert checker({'foo': 1, 'bar': 1, 'baz': 0}) == tuple()
-
-
-def test_make_ravg():
-    ravg = util.make_ravg()
-    assert ravg(0) == 0
-    assert ravg(2) == 1
-    assert ravg(4) == 2
-    assert ravg(6) == 3
-    assert ravg(8) == 4
 

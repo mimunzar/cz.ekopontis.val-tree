@@ -91,7 +91,6 @@ Tree = cl.namedtuple('Tree', [
 ])
 def make_tree_parser():
     keys        = TREE_ROW_VALIDATOR.keys()
-    parser      = util.make_checker(TREE_ROW_VALIDATOR)
     rad_to_diam = lambda x: round(float(x)/ma.pi)
     def tree_trunk_diameters(aTreeRow):
         if note := aTreeRow['poznámka']:
@@ -100,7 +99,7 @@ def make_tree_parser():
         return (int(aTreeRow['průměr kmenů [cm]']),)
     def tree_parser(vals):
         row = dict(zip(keys, vals))
-        if err := parser(row):
+        if err := util.validate_dict(TREE_ROW_VALIDATOR, row):
             raise ValueError(f'Failed to parse tree ({", ".join(err)})')
         return Tree(
                 id                      = row['id'],
