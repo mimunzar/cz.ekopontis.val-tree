@@ -89,7 +89,6 @@ Tree = cl.namedtuple('Tree', [
     'location_attractiveness',
     'growth_conditions',
 ])
-
 def make_tree_parser():
     keys        = TREE_ROW_VALIDATOR.keys()
     parser      = util.make_checker(TREE_ROW_VALIDATOR)

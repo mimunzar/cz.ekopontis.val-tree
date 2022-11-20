@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import collections as cl
 
 
@@ -7,7 +6,6 @@ ProcessedTree = cl.namedtuple('ProcessedTree', [
     'id',
     'value_czk',
 ])
-
 def make_tree_writer(aFile, should_write_header):
     if should_write_header:
         aFile.write('{}\n'.format(','.join(ProcessedTree._fields)))
